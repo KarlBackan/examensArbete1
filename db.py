@@ -12,7 +12,6 @@ class Customer(Base):
     customer_since = Column(Date)
     amount_of_orders = Column(Integer)
     customer_address = Column(String)
-
     orders = relationship("Order", secondary="customer_has_order", overlaps="customers")
 
 
