@@ -3,11 +3,14 @@ import db_functions
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def home():
     return "Welcome to the home page!"
 
+@app.route('/customer', methods=['GET'])
+def get_all_customers():
+    customers = db_functions.get_customers()
+    return jsonify([customer._asdict() for customer in customers])
 
 # Add customer
 @app.route('/customer', methods=['POST'])
@@ -65,6 +68,7 @@ def add_order():
     items = data.get('items')
     db_functions.add_order(customer_id, order_date, order_discount, items)
     return jsonify({"message": "Order added"}), 201
+
 
 
 # Get orders
