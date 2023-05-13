@@ -1,8 +1,13 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 
+
 from db import engine, Customer, Order, Item, CustomerHasOrder, OrderHasItem
+from config_db import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
+
 from datetime import datetime
 
 
@@ -16,7 +21,7 @@ def add_customer(customer_since, amount_of_orders, customer_address):
                 customer_address, str)):
             raise ValueError("Invalid input data types")
 
-        engine = create_engine('mysql://username:password@localhost/db_name')
+        engine = create_engine(f"mysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -37,7 +42,7 @@ def add_item(item_name, isLength, item_price):
         if not (isinstance(item_name, str) and isinstance(isLength, bool) and isinstance(item_price, (int, float))):
             raise ValueError("Invalid input data types")
 
-        engine = create_engine('mysql://username:password@localhost/db_name')
+        engine = create_engine(f"mysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
         Session = sessionmaker(bind=engine)
         session = Session()
 
@@ -58,7 +63,7 @@ def add_order(customer_id, order_date, order_discount, items):
                 int, float)) and isinstance(items, list)):
             raise ValueError("Invalid input data types")
 
-        engine = create_engine('mysql://username:password@localhost/db_name')
+        engine = create_engine(f"mysql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}")
         Session = sessionmaker(bind=engine)
         session = Session()
 

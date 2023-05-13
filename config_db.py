@@ -1,5 +1,5 @@
 # config_db.py
-DB_USERNAME = 'your_username'
-DB_PASSWORD = 'your_password'
-DB_HOST = 'your_host'
-DB_NAME = 'your_database_name'
+DB_USERNAME = 'root'
+DB_PASSWORD = 'or*t7F5&MWQXa^&86oW5XfWJ'
+DB_HOST = 'localhost'
+DB_NAME = 'ex_app_data_test_1'

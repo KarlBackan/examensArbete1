@@ -51,7 +51,8 @@ class Item(Base):
     orders = relationship("Order", secondary="order_has_item")
 
 
-database_url = 'mysql://username:password@localhost/db_name'
+database_url = 'mysql+mysqlconnector://username:password@localhost/db_name'
+
 engine = create_engine(database_url)
 
 
