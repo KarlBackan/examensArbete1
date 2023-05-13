@@ -13,7 +13,7 @@ class Customer(Base):
     amount_of_orders = Column(Integer)
     customer_address = Column(String)
 
-    orders = relationship("Order", secondary="customer_has_order")
+    orders = relationship("Order", secondary="customer_has_order", overlaps="customers")
 
 
 class CustomerHasOrder(Base):
@@ -28,8 +28,8 @@ class Order(Base):
     order_date = Column(Date)
     order_discount = Column(Float)
 
-    customers = relationship("Customer", secondary="customer_has_order")
-    items = relationship("Item", secondary="order_has_item")
+    customers = relationship("Customer", secondary="customer_has_order", overlaps="orders")
+    items = relationship("Item", secondary="order_has_item", overlaps="items")
 
 
 class OrderHasItem(Base):
@@ -48,7 +48,7 @@ class Item(Base):
     isLength = Column(Boolean)
     item_price = Column(Float)
 
-    orders = relationship("Order", secondary="order_has_item")
+    orders = relationship("Order", secondary="order_has_item", overlaps="items")
 
 
 database_url = 'mysql+mysqlconnector://username:password@localhost/db_name'
