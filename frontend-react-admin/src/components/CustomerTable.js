@@ -6,16 +6,20 @@ const CustomerTable = ({ customers }) => {
       <thead className="table-header">
         <tr>
           <th>ID</th>
+            <th>Customer Name</th>
           <th>Customer Since</th>
           <th>Amount of Orders</th>
+            <th>Customer Address</th>
         </tr>
       </thead>
       <tbody>
-        {customers.map((customer) => (
-          <tr key={customer.id}>
-            <td  className="table-row">>{customer.customer_id}< /td>
-            <td  className="table-row">>{customer.customer_since}</td>
-            <td  className="table-row">>{customer.amount_of_orders}</td>
+        {customers.map((customers) => (
+          <tr key={customers.id}>
+            <td  className="table-row">>{customers.customer_id}< /td>
+              <td  className="table-row">>{customers.customer_name}< /td>
+            <td  className="table-row">>{customers.customer_since}</td>
+            <td  className="table-row">>{customers.amount_of_orders}</td>
+              <td  className="table-row">>{customers.customer_address}</td>
           </tr>
         ))}
       </tbody>

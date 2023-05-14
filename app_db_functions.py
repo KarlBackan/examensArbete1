@@ -62,15 +62,57 @@ def get_items():
 
 
 # Add order
-@app.route('/order', methods=['POST'])
-def add_order():
-    data = request.get_json()
-    customer_id = data.get('customer_id')
-    order_date = data.get('order_date')
-    order_discount = data.get('order_discount')
-    items = data.get('items')
-    db_functions.add_order(customer_id, order_date, order_discount, items)
-    return jsonify({"message": "Order added"}), 201
+def add_order(customer_id, order_date, order_discount, items):
+    session = Session()
+    try:
+        # Create new order
+        new_order = Order(order_date=order_date, order_discount=order_discount)
+        session.add(new_order)
+        session.commit()
+
+        # Add items to the order
+        for item in items:
+            item_id = item["item_id"]
+            item_length = item.get("item_length", None)
+            item_quantity = item.get("item_quantity", None)
+            item_discount = item.get("item_discount", None)
+
+            # Check if relationship already exists in the order_has_item table
+            existing_order_has_item = session.query(OrderHasItem).filter(
+                OrderHasItem.order_id == new_order.order_id,
+                OrderHasItem.item_id == item_id
+            ).one_or_none()
+
+            if existing_order_has_item:
+                print(f"Relationship between order {new_order.order_id} and item {item_id} already exists.")
+            else:
+                order_has_item = OrderHasItem(order_id=new_order.order_id, item_id=item_id, item_length=item_length, item_quantity=item_quantity, item_discount=item_discount)
+                session.add(order_has_item)
+                session.commit()
+
+        # Check if relationship already exists in the customer_has_order table
+        existing_customer_has_order = session.query(CustomerHasOrder).filter(
+            CustomerHasOrder.customer_id == customer_id,
+            CustomerHasOrder.order_id == new_order.order_id
+        ).one_or_none()
+
+        if existing_customer_has_order:
+            print(f"Relationship between customer {customer_id} and order {new_order.order_id} already exists.")
+        else:
+            # Add the relationship to the customer_has_order table
+            new_customer_has_order = CustomerHasOrder(customer_id=customer_id, order_id=new_order.order_id)
+            session.add(new_customer_has_order)
+            session.commit()
+
+    except ValueError as ve:
+        print(f"Error adding order: {ve}")
+        session.rollback()
+    except SQLAlchemyError as e:
+        print(f"Error adding order: {e}")
+        session.rollback()
+    finally:
+        session.close()
+
 
 
 

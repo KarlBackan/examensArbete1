@@ -11,11 +11,11 @@ const OrderTable = ({ orders }) => {
         </tr>
       </thead>
       <tbody>
-        {orders.map((order) => (
-          <tr key={order.order_id}>
-            <td  className="table-row">>{order.order_id}</td>
-            <td  className="table-row">>{order.order_date}</td>
-            <td  className="table-row">>{order.order_discount}</td>
+        {orders.map((orders) => (
+          <tr key={orders.order_id}>
+            <td  className="table-row">>{orders.order_id}</td>
+            <td  className="table-row">>{orders.order_date}</td>
+            <td  className="table-row">>{orders.order_discount}</td>
           </tr>
         ))}
       </tbody>

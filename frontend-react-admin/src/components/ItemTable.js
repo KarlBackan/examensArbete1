@@ -11,11 +11,11 @@ const ItemTable = ({ items }) => {
         </tr>
       </thead>
       <tbody>
-        {items.map((item) => (
-          <tr key={item.item_id}>
-            <td  className="table-row">>{item.item_id}</td>
-            <td  className="table-row">>{item.item_name}</td>
-            <td  className="table-row">>{item.item_price}</td>
+        {items.map((items) => (
+          <tr key={items.item_id}>
+            <td  className="table-row">>{items.item_id}</td>
+            <td  className="table-row">>{items.item_name}</td>
+            <td  className="table-row">>{items.item_price}</td>
           </tr>
         ))}
       </tbody>

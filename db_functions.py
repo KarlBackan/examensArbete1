@@ -15,7 +15,7 @@ Session = sessionmaker(bind=engine)
 
 
 #add functions
-def add_customer(customer_since, amount_of_orders, customer_address):
+def add_customer(customer_name, customer_since, amount_of_orders, customer_address):
     try:
         if not (isinstance(customer_since, datetime) and isinstance(amount_of_orders, int) and isinstance(
                 customer_address, str)):
@@ -25,7 +25,7 @@ def add_customer(customer_since, amount_of_orders, customer_address):
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        new_customer = Customer(customer_since=customer_since, amount_of_orders=amount_of_orders,
+        new_customer = Customer(customer_name=customer_name, customer_since=customer_since, amount_of_orders=amount_of_orders,
                                 customer_address=customer_address)
         session.add(new_customer)
         session.commit()

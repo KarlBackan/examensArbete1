@@ -6,8 +6,9 @@ from config_db import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
 Base = declarative_base()
 
 class Customer(Base):
-    __tablename__ = 'customer'
+    __tablename__ = 'customers'
     customer_id = Column(Integer, primary_key=True)
+    customer_name = Column(String(255))
     customer_since = Column(Date)
     amount_of_orders = Column(Integer)
     customer_address = Column(String(255))
@@ -17,13 +18,14 @@ class Customer(Base):
     def _asdict(self):
         return {
             "customer_id": self.customer_id,
+            "customer_name": self.customer_name,
             "customer_since": self.customer_since.isoformat() if self.customer_since else None,
             "amount_of_orders": self.amount_of_orders,
             "customer_address": self.customer_address
         }
 
 class Order(Base):
-    __tablename__ = 'order'
+    __tablename__ = 'orders'
     order_id = Column(Integer, primary_key=True)
     order_date = Column(Date)
     order_discount = Column(Float)
@@ -39,7 +41,7 @@ class Order(Base):
         }
 
 class Item(Base):
-    __tablename__ = 'item'
+    __tablename__ = 'items'
     item_id = Column(Integer, primary_key=True)
     item_name = Column(String(255))
     isLength = Column(Boolean)
@@ -58,19 +60,36 @@ class Item(Base):
 
 class CustomerHasOrder(Base):
     __tablename__ = 'customer_has_order'
-    customer_id = Column(Integer, ForeignKey('customer.customer_id'), primary_key=True)
-    order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
+    customer_id = Column(Integer, ForeignKey('customers.customer_id'), primary_key=True)
+    order_id = Column(Integer, ForeignKey('orders.order_id'), primary_key=True)
+
+    def _asdict(self):
+        return {
+            "customer_id": self.customer_id,
+            "order_id": self.order_id
+        }
+
 
 
 
 
 class OrderHasItem(Base):
     __tablename__ = 'order_has_item'
-    order_id = Column(Integer, ForeignKey('order.order_id'), primary_key=True)
-    item_id = Column(Integer, ForeignKey('item.item_id'), primary_key=True)
+    order_id = Column(Integer, ForeignKey('orders.order_id'), primary_key=True)
+    item_id = Column(Integer, ForeignKey('items.item_id'), primary_key=True)
     item_length = Column(Float)
     item_quantity = Column(Integer)
     item_discount = Column(Float)
+
+    def _asdict(self):
+        return {
+            "order_id": self.order_id,
+            "item_id": self.item_id,
+            "item_length": self.item_length,
+            "item_quantity": self.item_quantity,
+            "item_discount": self.item_discount
+        }
+
 
 
 
