@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from config_db import DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME
 
-
 Base = declarative_base()
 
 class Customer(Base):

@@ -1,33 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 
-const OrderTable = () => {
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
-    const response = await axios.get('/api/orders');
-    setOrders(response.data);
-  };
-
+const OrderTable = ({ orders }) => {
   return (
     <table>
-      <thead>
+      <thead className="table-header">
         <tr>
           <th>Order ID</th>
-          <th>Customer ID</th>
-          <th>Date</th>
+          <th>Order Date</th>
+          <th>Order Discount</th>
         </tr>
       </thead>
       <tbody>
         {orders.map((order) => (
           <tr key={order.order_id}>
-            <td>{order.order_id}</td>
-            <td>{order.customer_id}</td>
-            <td>{order.date}</td>
+            <td  className="table-row">>{order.order_id}</td>
+            <td  className="table-row">>{order.order_date}</td>
+            <td  className="table-row">>{order.order_discount}</td>
           </tr>
         ))}
       </tbody>

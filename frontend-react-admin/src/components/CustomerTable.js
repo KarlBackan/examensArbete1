@@ -3,7 +3,7 @@ import React from 'react';
 const CustomerTable = ({ customers }) => {
   return (
     <table>
-      <thead>
+      <thead className="table-header">
         <tr>
           <th>ID</th>
           <th>Customer Since</th>
@@ -13,9 +13,9 @@ const CustomerTable = ({ customers }) => {
       <tbody>
         {customers.map((customer) => (
           <tr key={customer.id}>
-            <td>{customer.id}</td>
-            <td>{customer.customer_since}</td>
-            <td>{customer.amount_of_orders}</td>
+            <td  className="table-row">>{customer.customer_id}< /td>
+            <td  className="table-row">>{customer.customer_since}</td>
+            <td  className="table-row">>{customer.amount_of_orders}</td>
           </tr>
         ))}
       </tbody>

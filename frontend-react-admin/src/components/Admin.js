@@ -3,6 +3,8 @@ import axios from 'axios';
 import CustomerTable from './CustomerTable';
 import OrderTable from './OrderTable';
 import ItemTable from './ItemTable';
+import './TableStyles.css';
+
 
 const Admin = () => {
   const [customers, setCustomers] = useState([]);
