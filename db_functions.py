@@ -146,14 +146,44 @@ def get_orders():
 
 # Get order items
 def get_order_items(order_id):
-    try:
-        session = Session()
-        order_items = session.query(Item).join(OrderHasItem).filter(OrderHasItem.order_id == order_id).all()
+    session = Session()
+    order = session.query(Order).filter(Order.order_id == order_id).first()
+
+    if order:
+        # Get the order_has_items records related to the order
+        order_items_relations = session.query(OrderHasItem).filter(OrderHasItem.order_id == order_id).all()
+
+        print(f"Order item relations: {order_items_relations}")  # Debugging print statement
+
+        # Check if the order has any associated items
+        if not order_items_relations:
+            session.close()
+            return []
+
+        # For each relation, get the corresponding Item
+        items = [session.query(Item).filter(Item.item_id == relation.item_id).first() for relation in order_items_relations]
+
+        print(f"Items: {items}")  # Debugging print statement
+
+        # Remove None values from the list
+        items = [item for item in items if item is not None]
+
         session.close()
-        return order_items
-    except SQLAlchemyError as e:
-        print(f"Error getting items for order: {e}")
-        return []
+        return items
+    else:
+        session.close()
+        return None
+
+
+
+def get_order(order_id):
+    session = Session()
+
+    order = session.query(Order).filter(Order.order_id == order_id).first()
+
+    session.close()
+
+    return order
 
 
 def update_database(df):
@@ -164,3 +194,15 @@ def update_database(df):
         # Assuming that row is a dictionary like {"customer_id": 1, "order_date": "2023-05-16", "order_discount": 0.1}
         # Also, assuming that `add_order` function takes these parameters: customer_id, order_date, order_discount
         add_order(row['customer_id'], row['order_date'], row['order_discount'])
+
+
+
+def add_item_to_order(order_id, item_id, item_length, item_quantity, item_discount):
+    session = Session()
+
+    new_order_has_item = OrderHasItem(order_id=order_id, item_id=item_id,
+                                      item_length=item_length, item_quantity=item_quantity,
+                                      item_discount=item_discount)
+    session.add(new_order_has_item)
+    session.commit()
+    session.close()

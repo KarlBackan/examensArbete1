@@ -140,6 +140,15 @@ def delete_item(item_id):
     else:
         return jsonify({"message": "Item not found"}), 404
 
+# Get order by id
+@app.route('/order/<int:order_id>', methods=['GET'])
+def get_order(order_id):
+    order = db_functions.get_order(order_id)
+    if order:
+        return jsonify(order._asdict())
+    else:
+        return jsonify({"message": "Order not found"}), 404
+
 
 # Get items for a specific order
 @app.route('/order/<int:order_id>/items', methods=['GET'])
@@ -149,6 +158,7 @@ def get_order_items(order_id):
         return jsonify([item._asdict() for item in items])
     else:
         return jsonify({"message": "No items found for this order"}), 404
+
 
 
 
@@ -178,4 +188,16 @@ def delete_order(order_id):
         return jsonify({"message": "Order deleted"}), 200
     else:
         return jsonify({"message": "Order not found"}), 404
+
+
+@app.route('/order/<int:order_id>/item/<int:item_id>', methods=['POST'])
+def add_item_to_order(order_id, item_id):
+    data = request.get_json()
+    item_length = data.get('item_length')
+    item_quantity = data.get('item_quantity')
+    item_discount = data.get('item_discount')
+
+    db_functions.add_item_to_order(order_id, item_id, item_length, item_quantity, item_discount)
+
+    return jsonify({"message": "Item added to order"}), 201
 
