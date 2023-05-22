@@ -13,7 +13,6 @@ from datetime import datetime
 
 Session = sessionmaker(bind=engine)
 
-
 #add functions
 def add_customer(customer_name, customer_since, amount_of_orders, customer_address):
     try:
@@ -144,3 +143,24 @@ def get_orders():
     except SQLAlchemyError as e:
         print(f"Error getting orders: {e}")
         return []
+
+# Get order items
+def get_order_items(order_id):
+    try:
+        session = Session()
+        order_items = session.query(Item).join(OrderHasItem).filter(OrderHasItem.order_id == order_id).all()
+        session.close()
+        return order_items
+    except SQLAlchemyError as e:
+        print(f"Error getting items for order: {e}")
+        return []
+
+
+def update_database(df):
+    # Convert dataframe to list of dictionaries
+    data = df.to_dict(orient='records')
+
+    for row in data:
+        # Assuming that row is a dictionary like {"customer_id": 1, "order_date": "2023-05-16", "order_discount": 0.1}
+        # Also, assuming that `add_order` function takes these parameters: customer_id, order_date, order_discount
+        add_order(row['customer_id'], row['order_date'], row['order_discount'])

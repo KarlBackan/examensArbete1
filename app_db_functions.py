@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -62,58 +64,19 @@ def get_items():
 
 
 # Add order
-def add_order(customer_id, order_date, order_discount, items):
-    session = Session()
-    try:
-        # Create new order
-        new_order = Order(order_date=order_date, order_discount=order_discount)
-        session.add(new_order)
-        session.commit()
+@app.route('/order', methods=['POST'])
+def add_order():
+    data = request.get_json()
+    customer_id = data.get('customer_id')
+    order_date = data.get('order_date')
+    order_discount = data.get('order_discount')
+    items = data.get('items')
 
-        # Add items to the order
-        for item in items:
-            item_id = item["item_id"]
-            item_length = item.get("item_length", None)
-            item_quantity = item.get("item_quantity", None)
-            item_discount = item.get("item_discount", None)
+    # Convert order_date from string to datetime object
+    order_date = datetime.strptime(order_date, "%Y-%m-%d")
 
-            # Check if relationship already exists in the order_has_item table
-            existing_order_has_item = session.query(OrderHasItem).filter(
-                OrderHasItem.order_id == new_order.order_id,
-                OrderHasItem.item_id == item_id
-            ).one_or_none()
-
-            if existing_order_has_item:
-                print(f"Relationship between order {new_order.order_id} and item {item_id} already exists.")
-            else:
-                order_has_item = OrderHasItem(order_id=new_order.order_id, item_id=item_id, item_length=item_length, item_quantity=item_quantity, item_discount=item_discount)
-                session.add(order_has_item)
-                session.commit()
-
-        # Check if relationship already exists in the customer_has_order table
-        existing_customer_has_order = session.query(CustomerHasOrder).filter(
-            CustomerHasOrder.customer_id == customer_id,
-            CustomerHasOrder.order_id == new_order.order_id
-        ).one_or_none()
-
-        if existing_customer_has_order:
-            print(f"Relationship between customer {customer_id} and order {new_order.order_id} already exists.")
-        else:
-            # Add the relationship to the customer_has_order table
-            new_customer_has_order = CustomerHasOrder(customer_id=customer_id, order_id=new_order.order_id)
-            session.add(new_customer_has_order)
-            session.commit()
-
-    except ValueError as ve:
-        print(f"Error adding order: {ve}")
-        session.rollback()
-    except SQLAlchemyError as e:
-        print(f"Error adding order: {e}")
-        session.rollback()
-    finally:
-        session.close()
-
-
+    db_functions.add_order(customer_id, order_date, order_discount, items)
+    return jsonify({"message": "Order added"}), 201
 
 
 # Get orders
@@ -130,4 +93,89 @@ def get_customer_orders(customer_id):
     return jsonify([order._asdict() for order in orders])
 
 
+# Update customer
+@app.route('/customer/<int:customer_id>', methods=['PUT'])
+def update_customer(customer_id):
+    data = request.get_json()
+    customer_since = data.get('customer_since')
+    amount_of_orders = data.get('amount_of_orders')
+    customer_address = data.get('customer_address')
+    updated_customer = db_functions.update_customer(customer_id, customer_since, amount_of_orders, customer_address)
+    if updated_customer:
+        return jsonify({"message": "Customer updated"}), 200
+    else:
+        return jsonify({"message": "Customer not found"}), 404
+
+
+# Delete customer
+@app.route('/customer/<int:customer_id>', methods=['DELETE'])
+def delete_customer(customer_id):
+    deleted_customer = db_functions.delete_customer(customer_id)
+    if deleted_customer:
+        return jsonify({"message": "Customer deleted"}), 200
+    else:
+        return jsonify({"message": "Customer not found"}), 404
+
+
+# Update item
+@app.route('/item/<int:item_id>', methods=['PUT'])
+def update_item(item_id):
+    data = request.get_json()
+    item_name = data.get('item_name')
+    isLength = data.get('isLength')
+    item_price = data.get('item_price')
+    updated_item = db_functions.update_item(item_id, item_name, isLength, item_price)
+    if updated_item:
+        return jsonify({"message": "Item updated"}), 200
+    else:
+        return jsonify({"message": "Item not found"}), 404
+
+
+# Delete item
+@app.route('/item/<int:item_id>', methods=['DELETE'])
+def delete_item(item_id):
+    deleted_item = db_functions.delete_item(item_id)
+    if deleted_item:
+        return jsonify({"message": "Item deleted"}), 200
+    else:
+        return jsonify({"message": "Item not found"}), 404
+
+
+# Get items for a specific order
+@app.route('/order/<int:order_id>/items', methods=['GET'])
+def get_order_items(order_id):
+    items = db_functions.get_order_items(order_id)
+    if items:
+        return jsonify([item._asdict() for item in items])
+    else:
+        return jsonify({"message": "No items found for this order"}), 404
+
+
+
+# Update order
+@app.route('/order/<int:order_id>', methods=['PUT'])
+def update_order(order_id):
+    data = request.get_json()
+    customer_id = data.get('customer_id')
+    order_date = data.get('order_date')
+    order_discount = data.get('order_discount')
+    items = data.get('items')
+    # Convert order_date from string to datetime object
+    order_date = datetime.datetime.strptime(order_date, "%Y-%m-%d")
+
+    updated_order = db_functions.update_order(order_id, customer_id, order_date, order_discount, items)
+    if updated_order:
+        return jsonify({"message": "Order updated"}), 200
+    else:
+        return jsonify({"message": "Order not found"}), 404
+
+
+# Delete order
+@app.route('/order/<int:order_id>', methods=['DELETE'])
+def delete_order(order_id):
+    deleted_order = db_functions.delete_order(order_id)
+    if deleted_order:
+        return jsonify({"message": "Order deleted"}), 200
+    else:
+        return jsonify({"message": "Order not found"}), 404
 
